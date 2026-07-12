@@ -18,21 +18,49 @@ function showPage(id) {
 }
 
 /* ── Formulaire de contact ── */
-function submitForm() {
+/* Envoi direct par email via FormSubmit (service gratuit, sans compte requis),
+   en AJAX pour rester sur la même page (pas de redirection). Le tout premier
+   envoi déclenche un email de confirmation à asami.architecte@gmail.com : il
+   faut cliquer une fois sur "Activate Form" dans cet email pour débloquer la
+   réception des messages suivants. */
+async function submitForm() {
+  const honey = document.getElementById('f-honey').value;
+  if (honey) return; // piège à robots, on n'envoie rien
+
   const nom = document.getElementById('f-nom').value.trim();
   const email = document.getElementById('f-email').value.trim();
   if (!nom || !email) { alert('Merci de renseigner votre nom et votre email.'); return; }
   const tel = document.getElementById('f-tel').value.trim();
   const msg = document.getElementById('f-message').value.trim();
   const prests = [...document.querySelectorAll('input[name="prestation"]:checked')].map(i => i.value);
-  const subject = encodeURIComponent('Nouvelle demande — ASAMI');
-  const body = encodeURIComponent(
-    'Nom : ' + nom + '\nEmail : ' + email + '\nTél : ' + (tel || '—') +
-    '\nPrestations : ' + (prests.join(', ') || '—') + '\n\nMessage :\n' + (msg || '—')
-  );
-  window.location.href = 'mailto:asami.architecte@gmail.com?subject=' + subject + '&body=' + body;
-  document.getElementById('contact-form').style.display = 'none';
-  document.getElementById('form-confirm').classList.add('show');
+
+  const btn = document.querySelector('.contact-tiles .btn-thin');
+  const btnLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Envoi en cours…'; }
+
+  const payload = {
+    'Nom': nom,
+    'Email': email,
+    'Téléphone': tel || '—',
+    'Type de prestation': prests.join(', ') || '—',
+    'Message': msg || '—',
+    _subject: 'Nouvelle demande — Site ASAMI',
+    _template: 'table'
+  };
+
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/asami.architecte@gmail.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Envoi échoué');
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('form-confirm').classList.add('show');
+  } catch (err) {
+    alert("Une erreur est survenue lors de l'envoi. Réessayez, ou écrivez-nous directement à asami.architecte@gmail.com.");
+    if (btn) { btn.disabled = false; btn.textContent = btnLabel; }
+  }
 }
 
 /* ── Téléchargement du portfolio PDF (avec confirmation) ── */
