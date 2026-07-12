@@ -10,6 +10,14 @@ const CATEGORIES = [
   { key: 'p', label: 'Paysage' }
 ];
 
+const STEPS = [
+  { num:'01', title:'Faisabilité / Étude', desc:"Analyse technique et réglementaire pour évaluer le plein potentiel de votre bien ou terrain. Une étude préalable essentielle pour valider la viabilité et sécuriser le budget de votre projet avant tout engagement." },
+  { num:'02', title:'Consultation / Conseils', desc:"Transformation ou restructuration de vos espaces ou bâti existants pour les adapter à vos nouveaux modes de vie. Un aménagement sur-mesure qui sublime votre intérieur en alliant fonctionnalité et lumière." },
+  { num:'03', title:'Rénovation / Restructuration', desc:"Diagnostic, conception et exécution de travaux de rénovation. Maîtrise des contraintes structurelles, techniques et budgétaires pour redonner vie aux bâtiments anciens ou plus récents." },
+  { num:'04', title:'Extension / Surélévation', desc:"Création de nouveaux volumes pour agrandir votre surface habitable en parfaite harmonie avec l'identité du bâti existant. La solution architecturale pour gagner de l'espace et valoriser votre patrimoine sans déménager." },
+  { num:'05', title:'Construction neuve', desc:"Conception et direction des travaux pour des projets uniques, de la première esquisse jusqu'à la remise des clés. Une architecture pensée sur-mesure, durable et parfaitement intégrée à son environnement." }
+];
+
 const PROJECTS = [
   { code:'a01', title:'REFUGE BALLAND', typo:'LOGEMENT PRIVÉ', lieu:'Ikast — DANEMARK', annee:'',
     desc:"Imaginé pour un couple de retraités danois, ce pavillon à l'ossature bois rythmée et à la façade vitrée propose un dialogue épuré entre architecture et nature.\n\nConçu comme une lanterne dans la clairière, il invite à la contemplation et efface les frontières avec son environnement sauvage. Les espaces intérieurs sont aussi tournés vers les espaces extérieurs.",

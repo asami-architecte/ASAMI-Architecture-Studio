@@ -64,6 +64,28 @@ function thumbPath(src) {
   return src.replace(/(\.[a-zA-Z0-9]+)$/, '_mini_index$1');
 }
 
+/* Active un défilement continu (marquee) quand le texte dépasse l'espace
+   disponible — utilisé pour les infos projet (typo / lieu / année) quand elles
+   sont trop larges pour l'écran (surtout en mobile). */
+function setupMarquee(extraEl) {
+  const track = extraEl.querySelector('.proj-extra-track');
+  if (!track) return;
+  const isOpen = parseFloat(getComputedStyle(extraEl).opacity) > 0.5;
+  if (!isOpen) return;
+  const overflowing = track.scrollWidth > extraEl.clientWidth + 4;
+  if (overflowing && !extraEl.classList.contains('marquee')) {
+    const text = track.dataset.text || track.textContent;
+    track.dataset.text = text;
+    track.innerHTML = `<span>${text}</span><span class="mq-gap"></span><span>${text}</span><span class="mq-gap"></span>`;
+    const dur = Math.max(7, text.length * 0.18); // vitesse lente, proportionnelle à la longueur
+    track.style.animationDuration = dur + 's';
+    extraEl.classList.add('marquee');
+  } else if (!overflowing && extraEl.classList.contains('marquee')) {
+    extraEl.classList.remove('marquee');
+    track.textContent = track.dataset.text || track.textContent;
+  }
+}
+
 function buildPortfolio() {
   const root = document.getElementById('portfolio-index');
   root.innerHTML = '';
@@ -93,7 +115,7 @@ function buildPortfolio() {
         <div class="proj-line">
           <span class="proj-ref">${p.code.toUpperCase()}</span>
           <span class="proj-title-line">— ${p.title}</span>
-          <span class="proj-extra">${extraBits}</span>
+          <span class="proj-extra"><span class="proj-extra-track">${extraBits}</span></span>
         </div>
         <div class="proj-images">${miniImgs}</div>
       `;
@@ -109,6 +131,10 @@ function buildPortfolio() {
           if (willOpen) row.classList.add('open');
         }
       });
+      const extraEl = row.querySelector('.proj-extra');
+      extraEl.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'opacity') setupMarquee(extraEl);
+      });
       catRow.appendChild(row);
     });
 
@@ -116,6 +142,29 @@ function buildPortfolio() {
   });
 }
 buildPortfolio();
+
+/* ══════════════════ STUDIO — accompagnement (même logique que le portfolio) ══════════════════ */
+function buildSteps() {
+  const root = document.getElementById('step-list');
+  if (!root || typeof STEPS === 'undefined') return;
+  root.innerHTML = '';
+  STEPS.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'step-item';
+    item.innerHTML = `
+      <div class="step-title">${s.num} — ${s.title}</div>
+      <div class="step-desc-wrap"><p class="step-desc">${s.desc}</p></div>
+    `;
+    item.addEventListener('click', () => {
+      if (hasRealHover()) return; // souris : le survol suffit, pas besoin de tap
+      const willOpen = !item.classList.contains('open');
+      document.querySelectorAll('.step-item.open').forEach(i => i.classList.remove('open'));
+      if (willOpen) item.classList.add('open');
+    });
+    root.appendChild(item);
+  });
+}
+buildSteps();
 
 /* ══════════════════ LIGHTBOX (zoom molette + pincement + drag) ══════════════════ */
 let lbProj = null, lbIdx = 0;
