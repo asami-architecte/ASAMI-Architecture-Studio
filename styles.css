@@ -116,11 +116,20 @@ img{max-width:100%;display:block;}
   font-weight:700;font-size:var(--fs-sm);letter-spacing:0.1em;text-transform:uppercase;
   color:var(--navy);padding:.7rem .1rem;transition:background-color .18s ease,color .18s ease;
 }
-.step-item:hover .step-title,.step-item.open .step-title{background:var(--navy);color:var(--white);}
 .step-desc-wrap{max-height:0;overflow:hidden;opacity:0;background:var(--white);
   transition:max-height .45s cubic-bezier(.2,.8,.3,1),opacity .3s ease;}
-.step-item:hover .step-desc-wrap,.step-item.open .step-desc-wrap{max-height:320px;opacity:1;}
 .step-desc{font-size:var(--fs-body);line-height:var(--lh);color:var(--navy);max-width:680px;padding:.1rem .1rem 1rem;}
+/* Le survol réel (souris) ne s'applique qu'aux appareils qui le supportent
+   vraiment -> évite le survol "collant" que les navigateurs mobiles simulent
+   après un tap et qui empêchait la ligne de revenir à son état initial. */
+@media(hover:hover){
+  .step-item:hover .step-title{background:var(--navy);color:var(--white);}
+  .step-item:hover .step-desc-wrap{max-height:320px;opacity:1;}
+}
+/* Tactile : uniquement piloté par la classe .open (script.js), ouverte au tap,
+   refermée par un tap ailleurs sur la page. */
+.step-item.open .step-title{background:var(--navy);color:var(--white);}
+.step-item.open .step-desc-wrap{max-height:320px;opacity:1;}
 .studio-footer{padding:2rem 3.2rem 2.8rem;}
 
 /* ═══════════════ BOUTONS / CASES ═══════════════ */
@@ -206,8 +215,8 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .proj-extra.marquee .proj-extra-track{animation:proj-marquee-scroll 10s linear infinite;}
 .proj-extra.marquee .mq-gap{display:inline-block;width:3em;}
 @keyframes proj-marquee-scroll{
-  from{transform:translateX(-50%);}
-  to{transform:translateX(0%);}
+  from{transform:translateX(0%);}
+  to{transform:translateX(-50%);}
 }
 .proj-row:hover .proj-ref,.proj-row:hover .proj-title-line,.proj-row:hover .proj-extra{color:var(--white);}
 .proj-row:hover .proj-extra{max-width:640px;opacity:1;}

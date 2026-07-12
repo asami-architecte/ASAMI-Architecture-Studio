@@ -19,10 +19,9 @@ function showPage(id) {
 
 /* ── Formulaire de contact ── */
 /* Envoi direct par email via FormSubmit (service gratuit, sans compte requis),
-   en AJAX pour rester sur la même page (pas de redirection). Le tout premier
-   envoi déclenche un email de confirmation à asami.architecte@gmail.com : il
-   faut cliquer une fois sur "Activate Form" dans cet email pour débloquer la
-   réception des messages suivants. */
+   en AJAX pour rester sur la même page (pas de redirection). Les messages
+   sont bien délivrés (confirmé) mais peuvent atterrir dans les spams de Gmail
+   la première fois -> pense à vérifier ce dossier et à marquer "pas spam". */
 async function submitForm() {
   const honey = document.getElementById('f-honey').value;
   if (honey) return; // piège à robots, on n'envoie rien
@@ -183,8 +182,9 @@ function buildSteps() {
       <div class="step-title">${s.num} — ${s.title}</div>
       <div class="step-desc-wrap"><p class="step-desc">${s.desc}</p></div>
     `;
-    item.addEventListener('click', () => {
+    item.addEventListener('click', (e) => {
       if (hasRealHover()) return; // souris : le survol suffit, pas besoin de tap
+      e.stopPropagation();
       const willOpen = !item.classList.contains('open');
       document.querySelectorAll('.step-item.open').forEach(i => i.classList.remove('open'));
       if (willOpen) item.classList.add('open');
@@ -193,6 +193,15 @@ function buildSteps() {
   });
 }
 buildSteps();
+
+/* Tactile : un tap en dehors d'une ligne "accompagnement" referme celle qui
+   est ouverte, pour que la ligne revienne bien à son état initial (repliée,
+   sans surlignage) au lieu de rester ouverte indéfiniment. */
+document.addEventListener('click', (e) => {
+  if (hasRealHover()) return;
+  if (e.target.closest('.step-item')) return;
+  document.querySelectorAll('.step-item.open').forEach(i => i.classList.remove('open'));
+});
 
 /* ══════════════════ LIGHTBOX (zoom molette + pincement + drag) ══════════════════ */
 let lbProj = null, lbIdx = 0;
