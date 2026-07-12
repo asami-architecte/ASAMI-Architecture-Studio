@@ -53,6 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ══════════════════ PORTFOLIO (index toujours visible) ══════════════════ */
+
+/* Vrai support du survol (souris) ? Sur tactile pur, hover:none -> false. */
+function hasRealHover() {
+  return window.matchMedia('(hover: hover)').matches;
+}
+
+/* Chemin de la miniature "_mini_index" à partir du chemin de l'image pleine taille. */
+function thumbPath(src) {
+  return src.replace(/(\.[a-zA-Z0-9]+)$/, '_mini_index$1');
+}
+
 function buildPortfolio() {
   const root = document.getElementById('portfolio-index');
   root.innerHTML = '';
@@ -76,7 +87,7 @@ function buildPortfolio() {
 
       const extraBits = [p.typo, p.lieu, p.annee].filter(Boolean).join(' — ');
       const miniImgs = p.images.map(src =>
-        `<img src="${src}" alt="${p.title}" onclick="event.stopPropagation(); openLightbox(${globalIdx}, '${src}')"/>`
+        `<img src="${thumbPath(src)}" alt="${p.title}" loading="lazy" onclick="event.stopPropagation(); openLightbox(${globalIdx}, '${src}')"/>`
       ).join('');
       row.innerHTML = `
         <div class="proj-line">
@@ -86,7 +97,18 @@ function buildPortfolio() {
         </div>
         <div class="proj-images">${miniImgs}</div>
       `;
-      row.addEventListener('click', () => openLightbox(globalIdx));
+      row.addEventListener('click', () => {
+        if (hasRealHover()) {
+          // Souris : le survol a déjà révélé les infos/images, un clic ouvre le lecteur.
+          openLightbox(globalIdx);
+        } else {
+          // Tactile : pas de survol fiable -> le premier tap ouvre/ferme la ligne
+          // (accordéon), un tap sur une image ouvre directement le lecteur.
+          const willOpen = !row.classList.contains('open');
+          document.querySelectorAll('.proj-row.open').forEach(r => r.classList.remove('open'));
+          if (willOpen) row.classList.add('open');
+        }
+      });
       catRow.appendChild(row);
     });
 

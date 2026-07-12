@@ -267,6 +267,17 @@ textarea.form-input{resize:vertical;min-height:80px;}
   .proj-row{grid-column:1;}
   .proj-images img{height:140px;}
 }
+/* ── Tactile : pas de :hover fiable -> script.js ajoute/retire .open au tap
+   sur la ligne (comme un accordéon). Un tap sur une image ouvre directement
+   le lecteur plein écran (géré séparément, stopPropagation dans buildPortfolio). ── */
+@media(hover:none){
+  .proj-row.open .proj-line{background:var(--navy);}
+  .proj-row.open .proj-ref,
+  .proj-row.open .proj-title-line,
+  .proj-row.open .proj-extra{color:var(--white);}
+  .proj-row.open .proj-extra{max-width:640px;opacity:1;white-space:normal;}
+  .proj-row.open .proj-images{max-height:220px;opacity:1;padding-bottom:.7rem;}
+}
 @media(max-width:560px){
   .tile-row{width:100%;}
   .tile-row .btn-thin{flex:1;}
